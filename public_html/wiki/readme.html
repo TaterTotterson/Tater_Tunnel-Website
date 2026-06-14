@@ -57,7 +57,7 @@
 <p>The generated config includes:</p>
 <ul><li>The VPS WireGuard interface.</li><li>One peer per approved device.</li></ul>
 <p>Revoking a device rewrites the config without that device peer.</p>
-<p>The Home Agent does not run WireGuard in the default product path. It pairs as a relay client so macOS, Windows, Docker, and Linux users do not need to install WireGuard just to run Tater at home. WireGuard is used for remote device VPN mode: the phone or laptop gets a config/QR whose endpoint is the VPS public IP/domain.</p>
+<p>The Home Agent does not run WireGuard in the default product path. It pairs as a relay client so macOS, Windows, Docker, and Linux users do not need to install WireGuard just to reach approved home app routes. WireGuard is used for remote device VPN mode: the phone or laptop gets a config/QR whose endpoint is the VPS public IP/domain.</p>
 <p>If the <code>wg</code> command is available, key generation uses it. Otherwise the prototype uses mock-shaped key material so the control flow can be tested without changing network interfaces.</p>
 <p>You can inspect the VPS WireGuard readiness and the Home Agent relay/device-VPN state:</p>
 <pre><code>curl http://127.0.0.1:4174/api/wireguard
@@ -111,7 +111,7 @@ curl http://127.0.0.1:4173/api/wireguard</code></pre>
 <pre><code>python3.11 -m unittest discover -s tests</code></pre>
 <h2>MVP Direction</h2>
 <p>The first useful version should let a user:</p>
-<ol><li>Install the VPS Agent.</li><li>Pair it from the Home Agent.</li><li>Add a phone or laptop with a QR code.</li><li>Reach Tater services through the Home Agent relay path.</li><li>Revoke a lost device.</li></ol>
+<ol><li>Install the VPS Agent.</li><li>Pair it from the Home Agent.</li><li>Add a phone or laptop with a QR code.</li><li>Reach approved Tater and local app routes through the Home Agent relay path.</li><li>Revoke a lost device.</li></ol>
 <p>Remote devices can use WireGuard VPN mode by scanning the generated WireGuard config/QR. A future native Tater app can wrap that flow the same way UniFi wraps WireGuard with Teleport/WiFiman.</p>
 <p>Local network access, guest access, multi-home support, and site-to-site networking should stay out of the first build unless the enforcement model is complete.</p>
     </article>

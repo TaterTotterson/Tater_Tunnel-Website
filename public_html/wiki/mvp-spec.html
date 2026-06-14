@@ -37,18 +37,18 @@
 <h2>Product Promise</h2>
 <p>Secure remote access to Tater without port forwarding, public dashboards, cloud tunnel accounts, or advanced networking setup.</p>
 <h2>MVP User Journey</h2>
-<ol><li>User rents or already has a VPS.</li><li>User installs Tater VPS Agent.</li><li>VPS Agent shows a pairing code.</li><li>User opens Tater Home Agent.</li><li>User enters VPS address and pairing code.</li><li>Home Agent claims the VPS and disables pairing mode.</li><li>Home Agent keeps an outbound relay connection to the VPS.</li><li>User adds a phone, laptop, or tablet.</li><li>Home Agent creates a WireGuard device enrollment for VPN mode.</li><li>User scans a QR code in the WireGuard app.</li><li>Device can reach approved Tater services remotely.</li><li>User can revoke the device from Home Agent.</li></ol>
+<ol><li>User rents or already has a VPS.</li><li>User installs Tater VPS Agent.</li><li>VPS Agent shows a pairing code.</li><li>User opens Tater Home Agent.</li><li>User enters VPS address and pairing code.</li><li>Home Agent claims the VPS and disables pairing mode.</li><li>Home Agent keeps an outbound relay connection to the VPS.</li><li>User adds a phone, laptop, or tablet.</li><li>Home Agent creates a WireGuard device enrollment for VPN mode.</li><li>User scans a QR code in the WireGuard app.</li><li>Device can reach approved Tater and local app routes remotely.</li><li>User can revoke the device from Home Agent.</li></ol>
 <h2>Components</h2>
 <h3>Tater VPS Agent</h3>
 <p>Runs on the VPS.</p>
 <p>MVP responsibilities:</p>
 <ul><li>Install and configure WireGuard.</li><li>Expose one UDP WireGuard port.</li><li>Accept one pairing claim from Home Agent.</li><li>Store the Home Agent relay authority record.</li><li>Add and remove WireGuard peers when instructed by Home Agent.</li><li>Bridge approved device traffic to the Home Agent relay path.</li><li>Report basic health.</li></ul>
 <p>Non-responsibilities:</p>
-<ul><li>No browser dashboard.</li><li>No service-level approval decisions.</li><li>No user or permission management.</li><li>No public access to Tater services.</li></ul>
+<ul><li>No browser dashboard.</li><li>No service-level approval decisions.</li><li>No user or permission management.</li><li>No public access to Tater services or approved local app routes.</li></ul>
 <h3>Tater Home Agent</h3>
 <p>Runs on the user&#x27;s home machine, Docker host, Unraid server, or future Home Assistant add-on.</p>
 <p>MVP responsibilities:</p>
-<ul><li>Claim a VPS Agent.</li><li>Maintain an outbound relay path to the VPS.</li><li>Generate remote-device WireGuard enrollment payloads.</li><li>Register Tater device identities.</li><li>Add and revoke devices.</li><li>Show tunnel health.</li><li>Gate Tater service access by approved device identity.</li></ul>
+<ul><li>Claim a VPS Agent.</li><li>Maintain an outbound relay path to the VPS.</li><li>Generate remote-device WireGuard enrollment payloads.</li><li>Register Tater device identities.</li><li>Add and revoke devices.</li><li>Show tunnel health.</li><li>Gate Tater service access and approved local app routes by approved device identity.</li></ul>
 <h2>MVP Screens</h2>
 <h3>Tunnel Status</h3>
 <p>Shows:</p>
@@ -79,7 +79,7 @@
 <h3>Milestone 4: Real Pairing</h3>
 <ul><li>Home Agent claims VPS Agent.</li><li>Pairing mode disables after claim.</li><li>Home Agent records relay status.</li><li>Home Agent can add and remove WireGuard peers.</li><li>Tunnel health is reported from both sides.</li></ul>
 <h3>Milestone 5: Tater Service Gate</h3>
-<ul><li>Approved device identity required for Tater services.</li><li>Revoked devices lose both WireGuard peer access and Tater access.</li><li>Audit log records pairing, enrollment, and revocation.</li></ul>
+<ul><li>Approved device identity required for Tater services and exposed app routes.</li><li>Revoked devices lose both WireGuard peer access and Tater/app-route access.</li><li>Audit log records pairing, enrollment, and revocation.</li></ul>
     </article>
 
           </main>

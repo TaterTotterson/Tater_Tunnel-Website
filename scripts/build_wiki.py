@@ -199,7 +199,7 @@ def render_home_page() -> str:
         [
             simple_card(
                 "Home Agent",
-                "Runs beside Tater on the user's home machine. It owns pairing, approved devices, route targets, and the local relay to Tater services.",
+                "Runs beside Tater on the user's home machine. It owns pairing, approved devices, route targets, and the local relay to approved Tater or app services.",
                 ["macOS", "Windows", "Linux", "Docker path later"],
             ),
             simple_card(
@@ -220,7 +220,7 @@ def render_home_page() -> str:
       <div class="hero-copy">
         <span class="eyebrow">Secure relay + mobile VPN</span>
         <h1>Tater Tunnel</h1>
-        <p>Bring your home Tater services with you through your own VPS, without opening inbound ports at home.</p>
+        <p>Bring your home Tater setup and approved local apps with you through your own VPS, without opening inbound ports at home.</p>
         <div class="hero-actions">
           {action_link("Start setup", "setup/index.html")}
           {action_link("View routes", "routes/index.html", secondary=True)}
@@ -236,8 +236,8 @@ def render_home_page() -> str:
     <section class="section section-intro" id="overview">
       <div class="section-head">
         <span class="eyebrow">What it does</span>
-        <h2>A simple path from phone to home Tater.</h2>
-        <p>Tater Tunnel splits the problem into two easy pieces: the home computer makes an outbound relay connection, and mobile devices use a normal WireGuard profile to reach the VPS side.</p>
+        <h2>A simple path from phone to your home apps.</h2>
+        <p>Tater Tunnel splits the problem into two easy pieces: the home computer makes an outbound relay connection, and mobile devices use a normal WireGuard profile to reach approved app routes through the VPS side.</p>
       </div>
       <div class="grid grid-3">
         {setup_cards}
@@ -256,7 +256,7 @@ def render_home_page() -> str:
         <b>-></b>
         <div><strong>Home Agent</strong><span>approved routes</span></div>
         <b>-></b>
-        <div><strong>Tater services</strong><span>local targets</span></div>
+        <div><strong>Approved apps</strong><span>local targets</span></div>
       </div>
     </section>
 
@@ -284,8 +284,8 @@ def render_home_page() -> str:
     </section>
     """
     return page_template(
-        "Tater Tunnel | Secure relay for Tater",
-        "Tater Tunnel pairs a Home Agent to a VPS and lets remote devices reach approved Tater services through WireGuard and a home relay.",
+        "Tater Tunnel | Secure relay for home apps",
+        "Tater Tunnel pairs a Home Agent to a VPS and lets remote devices reach approved Tater and local app routes through WireGuard and a home relay.",
         body,
         nav_key="home",
         depth=0,
@@ -361,8 +361,8 @@ def render_routes_page() -> str:
     body = f"""
     <section class="sub-hero">
       <span class="eyebrow">Routes</span>
-      <h1>Expose only the local apps you approve.</h1>
-      <p>Routes are named paths under the VPS relay. The phone opens the VPS tunnel IP, and the Home Agent proxies the request to a local target.</p>
+      <h1>Expose only the apps you approve.</h1>
+      <p>Routes are named paths under the VPS relay. The phone opens the VPS tunnel IP, and the Home Agent proxies the request to a Tater service or any local app target you choose.</p>
     </section>
 
     <section class="section">
@@ -415,7 +415,7 @@ def render_routes_page() -> str:
     """
     return page_template(
         "Tater Tunnel | Routes",
-        "Add and test approved Tater Tunnel relay routes from the Home Agent UI.",
+        "Add and test approved Tater Tunnel routes for Tater services or other local apps from the Home Agent UI.",
         body,
         nav_key="routes",
         depth=1,

@@ -3,8 +3,8 @@
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
-          <meta name="description" content="Tater Tunnel pairs a Home Agent to a VPS and lets remote devices reach approved Tater services through WireGuard and a home relay.">
-          <title>Tater Tunnel | Secure relay for Tater</title>
+          <meta name="description" content="Tater Tunnel pairs a Home Agent to a VPS and lets remote devices reach approved Tater and local app routes through WireGuard and a home relay.">
+          <title>Tater Tunnel | Secure relay for home apps</title>
           <link rel="stylesheet" href="assets/site.css">
           <script src="assets/site.js" defer></script>
         </head>
@@ -32,7 +32,7 @@
       <div class="hero-copy">
         <span class="eyebrow">Secure relay + mobile VPN</span>
         <h1>Tater Tunnel</h1>
-        <p>Bring your home Tater services with you through your own VPS, without opening inbound ports at home.</p>
+        <p>Bring your home Tater setup and approved local apps with you through your own VPS, without opening inbound ports at home.</p>
         <div class="hero-actions">
           <a class="button" href="setup/index.html">Start setup</a>
           <a class="button button-secondary" href="routes/index.html">View routes</a>
@@ -48,13 +48,13 @@
     <section class="section section-intro" id="overview">
       <div class="section-head">
         <span class="eyebrow">What it does</span>
-        <h2>A simple path from phone to home Tater.</h2>
-        <p>Tater Tunnel splits the problem into two easy pieces: the home computer makes an outbound relay connection, and mobile devices use a normal WireGuard profile to reach the VPS side.</p>
+        <h2>A simple path from phone to your home apps.</h2>
+        <p>Tater Tunnel splits the problem into two easy pieces: the home computer makes an outbound relay connection, and mobile devices use a normal WireGuard profile to reach approved app routes through the VPS side.</p>
       </div>
       <div class="grid grid-3">
         <article class="info-card">
   <h3>Home Agent</h3>
-  <p>Runs beside Tater on the user&#x27;s home machine. It owns pairing, approved devices, route targets, and the local relay to Tater services.</p>
+  <p>Runs beside Tater on the user&#x27;s home machine. It owns pairing, approved devices, route targets, and the local relay to approved Tater or app services.</p>
   <div class="chip-row"><span class="chip">macOS</span><span class="chip">Windows</span><span class="chip">Linux</span><span class="chip">Docker path later</span></div>
 </article>
 
@@ -85,7 +85,7 @@
         <b>-></b>
         <div><strong>Home Agent</strong><span>approved routes</span></div>
         <b>-></b>
-        <div><strong>Tater services</strong><span>local targets</span></div>
+        <div><strong>Approved apps</strong><span>local targets</span></div>
       </div>
     </section>
 

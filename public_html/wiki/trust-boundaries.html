@@ -36,12 +36,12 @@
       <h1>Tater Tunnel Trust Boundaries</h1>
 <h2>Core Rule</h2>
 <p>The VPS relays traffic. The Home Agent owns trust.</p>
-<p>The VPS should not decide who may use Tater services. It should only hold the minimum relay and WireGuard peer state needed to connect approved devices to the Home Agent.</p>
+<p>The VPS should not decide who may use Tater services or approved local app routes. It should only hold the minimum relay and WireGuard peer state needed to connect approved devices to the Home Agent.</p>
 <h2>Two Transport Paths</h2>
 <h3>Path 1: Home Relay</h3>
 <p>The Home Agent connects out to the VPS over a Tater-controlled secure relay path. This keeps setup simple for Docker, macOS, Windows, and Linux users because the home side does not need to install or operate WireGuard.</p>
 <p>The relay path provides:</p>
-<ul><li>Encrypted home-to-VPS transport.</li><li>Home Agent authentication.</li><li>No inbound ports at home.</li><li>A narrow route to approved Tater services.</li></ul>
+<ul><li>Encrypted home-to-VPS transport.</li><li>Home Agent authentication.</li><li>No inbound ports at home.</li><li>A narrow route to approved Tater services and local app targets.</li></ul>
 <h3>Path 2: Remote Device WireGuard</h3>
 <p>Remote phones and laptops can use WireGuard VPN mode against the VPS. This keeps the familiar &quot;scan QR, enable VPN&quot; mobile flow while avoiding WireGuard setup on the home machine.</p>
 <p>WireGuard device mode provides:</p>
@@ -50,14 +50,14 @@
 <h2>Tater Device Trust</h2>
 <p>Tater Device Trust provides:</p>
 <ul><li>Tater Device ID.</li><li>Pairing token or signing key.</li><li>Approval record.</li><li>Revocation state.</li></ul>
-<p>Tater services should require both:</p>
+<p>Approved Tater services should require both:</p>
 <ul><li>The request arrives through an approved transport path.</li><li>The requester proves an approved Tater device identity.</li></ul>
 <h2>Important Boundary: Tater Access vs LAN Access</h2>
 <p>Tater access and raw local network access must be treated as different products.</p>
 <h3>Tater Access</h3>
-<p>Tater services can enforce Tater Device Trust directly. This is the safest MVP path.</p>
+<p>Tater services can enforce Tater Device Trust directly. This is the safest MVP path. For non-Tater local apps, the Home Agent relay route is the enforcement point because those apps usually cannot validate Tater Device Trust by themselves.</p>
 <p>Approved device:</p>
-<ul><li>Has a WireGuard peer.</li><li>Has a Tater identity.</li><li>Is approved by Home Agent.</li><li>Can access approved Tater services through the VPS-to-Home relay.</li></ul>
+<ul><li>Has a WireGuard peer.</li><li>Has a Tater identity.</li><li>Is approved by Home Agent.</li><li>Can access approved Tater services or local app routes through the VPS-to-Home relay.</li></ul>
 <p>Revoked device:</p>
 <ul><li>WireGuard peer is removed.</li><li>Tater identity is revoked.</li><li>Active sessions are invalidated.</li></ul>
 <h3>Local Network Access</h3>
@@ -66,19 +66,19 @@
 <p>Until that exists, local network access should remain off by default and outside the MVP.</p>
 <h2>Threat Notes</h2>
 <h3>VPS Compromise</h3>
-<p>If the VPS is compromised, an attacker may see relay metadata and WireGuard peer configuration. They should still be unable to access Tater services without approved Tater device identity.</p>
+<p>If the VPS is compromised, an attacker may see relay metadata and WireGuard peer configuration. They should still be unable to access approved Tater services or local app routes without approved Tater device identity and Home Agent authorization.</p>
 <p>Required controls:</p>
 <ul><li>No service tokens stored on the VPS.</li><li>No Tater admin authority on the VPS.</li><li>Home Agent can rotate keys and reclaim to a new VPS.</li></ul>
 <h3>Stolen WireGuard Config</h3>
-<p>If a remote device&#x27;s WireGuard config is copied, WireGuard access alone should not grant Tater service access.</p>
+<p>If a remote device&#x27;s WireGuard config is copied, WireGuard access alone should not grant Tater service or app-route access.</p>
 <p>Required controls:</p>
-<ul><li>Tater service requests require device identity proof.</li><li>Device revocation invalidates the Tater identity.</li><li>Home Agent removes the WireGuard peer.</li></ul>
+<ul><li>Tater service requests and exposed app routes require device identity proof or Home Agent route authorization.</li><li>Device revocation invalidates the Tater identity.</li><li>Home Agent removes the WireGuard peer.</li></ul>
 <h3>Lost Device</h3>
 <p>Revocation must remove both layers:</p>
 <ul><li>Delete WireGuard peer.</li><li>Revoke Tater identity.</li><li>Invalidate sessions and pairing tokens.</li></ul>
 <h2>MVP Policy</h2>
 <p>For the first build:</p>
-<ul><li>Enable Tater service access.</li><li>Keep raw LAN routes disabled.</li><li>Show raw LAN access as an advanced future control.</li><li>Document that LAN access needs separate enforcement before release.</li></ul>
+<ul><li>Enable Tater service and explicit app-route access.</li><li>Keep raw LAN routes disabled.</li><li>Show raw LAN access as an advanced future control.</li><li>Document that LAN access needs separate enforcement before release.</li></ul>
     </article>
 
           </main>
