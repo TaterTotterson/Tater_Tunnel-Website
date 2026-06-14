@@ -62,11 +62,14 @@ pre {
 }
 
 code:not(pre code) {
+  max-width: 100%;
   padding: 0.16rem 0.36rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
   color: #ffcf95;
   background: rgba(255, 255, 255, 0.055);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .site-header {
@@ -97,24 +100,17 @@ code:not(pre code) {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
-  min-width: max-content;
+  flex: 0 0 auto;
   font-weight: 800;
 }
 
 .brand img {
-  width: 42px;
-  height: 42px;
+  width: 96px;
+  height: 48px;
   border-radius: 8px;
-  object-fit: cover;
-  object-position: left center;
+  object-fit: contain;
+  object-position: center;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-.brand span {
-  font-family: var(--font-head);
-  font-size: 1.05rem;
-  letter-spacing: 0;
 }
 
 .site-nav {
@@ -334,6 +330,7 @@ p {
 .grid {
   display: grid;
   gap: 1rem;
+  min-width: 0;
 }
 
 .grid-2 {
@@ -356,6 +353,7 @@ p {
 }
 
 .info-card {
+  min-width: 0;
   padding: 1.25rem;
 }
 
@@ -438,6 +436,8 @@ p {
 }
 
 .command-box {
+  min-width: 0;
+  max-width: 100%;
   margin-top: 1rem;
   overflow: hidden;
   border: 1px solid rgba(91, 200, 255, 0.22);
@@ -470,14 +470,25 @@ p {
 }
 
 pre {
+  max-width: 100%;
   margin: 0;
   padding: 1rem;
-  overflow-x: auto;
+  overflow-x: hidden;
   color: #f7d5ad;
   line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+pre code {
+  white-space: inherit;
+  overflow-wrap: inherit;
+  word-break: inherit;
 }
 
 .callout {
+  min-width: 0;
   margin-top: 1rem;
   padding: 1rem;
 }
@@ -488,7 +499,7 @@ pre {
 }
 
 .callout code {
-  width: fit-content;
+  width: auto;
   margin-top: 0.55rem;
 }
 
@@ -498,6 +509,7 @@ pre {
 }
 
 .step-block {
+  min-width: 0;
   padding: 1.25rem;
 }
 
@@ -538,7 +550,7 @@ pre {
 
 .check-grid code {
   display: block;
-  width: fit-content;
+  width: auto;
   margin-top: 0.45rem;
 }
 
@@ -574,6 +586,7 @@ pre {
 }
 
 .doc-content {
+  min-width: 0;
   max-width: 880px;
 }
 
@@ -689,10 +702,6 @@ pre {
 @media (max-width: 560px) {
   :root {
     --content: min(100vw - 22px, 1160px);
-  }
-
-  .brand span {
-    font-size: 0.95rem;
   }
 
   .site-header::before {

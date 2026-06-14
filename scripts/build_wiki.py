@@ -19,7 +19,7 @@ IMAGE_DIR = ASSET_DIR / "images"
 GITHUB_REPO = "https://github.com/TaterTotterson/Tater_Tunnel"
 ONE_COMMAND_INSTALL = """curl -fsSL https://raw.githubusercontent.com/TaterTotterson/Tater_Tunnel/main/scripts/tater-vps-setup.sh \\
   -o /tmp/tater-vps-setup.sh && sudo bash /tmp/tater-vps-setup.sh"""
-HOME_AGENT_COMMAND = "python3.11 -m tater_tunnel.home_agent --host 0.0.0.0 --port 4173"
+HOME_AGENT_COMMAND = "python3 -m tater_tunnel.home_agent --host 0.0.0.0 --port 4173"
 DEVICE_TEST_URLS = """http://10.88.0.1:4174/api/health
 http://10.88.0.1:4174/relay/api/state"""
 VPS_CHECKS_COMMAND = """sudo systemctl status tater-tunnel-vps
@@ -126,7 +126,6 @@ def page_template(title: str, description: str, body: str, *, nav_key: str, dept
           <header class="site-header">
             <a class="brand" href="{base}index.html" aria-label="Tater Tunnel home">
               <img src="{base}assets/images/tater-logo-primary.png" alt="Tater logo">
-              <span>Tater Tunnel</span>
             </a>
             <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
             <nav class="site-nav" id="site-nav">
@@ -692,7 +691,7 @@ def build_docs() -> list[dict[str, str]]:
         path = TUNNEL_SOURCE_DIR / relative_path
         if not path.exists():
             continue
-        markdown = path.read_text(encoding="utf-8")
+        markdown = re.sub(r"\bpython3\.\d+\b", "python3", path.read_text(encoding="utf-8"))
         docs.append(
             {
                 "slug": slug,

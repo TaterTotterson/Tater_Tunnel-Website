@@ -12,7 +12,6 @@
           <header class="site-header">
             <a class="brand" href="../index.html" aria-label="Tater Tunnel home">
               <img src="../assets/images/tater-logo-primary.png" alt="Tater logo">
-              <span>Tater Tunnel</span>
             </a>
             <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
             <nav class="site-nav" id="site-nav">
@@ -83,7 +82,7 @@ Pairing Code: shown by the installer</code></pre>
 <p>For example, the Home Agent API state route is:</p>
 <pre><code>http://10.88.0.1:4174/relay/api/state</code></pre>
 <p>By default, <code>/relay/</code> points at the Home Agent / Tunnel UI. To add the main Tater app as a named route, start the Home Agent with a route for the app&#x27;s local URL:</p>
-<pre><code>python3.11 -m tater_tunnel.home_agent \
+<pre><code>python3 -m tater_tunnel.home_agent \
   --host 0.0.0.0 \
   --port 4173 \
   --relay-target http://127.0.0.1:4173 \
