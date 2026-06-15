@@ -81,7 +81,7 @@ code:not(pre code) {
   gap: 1rem;
   width: var(--content);
   margin: 0 auto;
-  padding: 0.7rem 0;
+  padding: 0.35rem 0;
 }
 
 .site-header::before {
@@ -90,7 +90,7 @@ code:not(pre code) {
   top: 0;
   left: 0;
   right: 0;
-  height: 72px;
+  height: 112px;
   z-index: -1;
   background: rgba(18, 16, 13, 0.9);
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
@@ -105,12 +105,12 @@ code:not(pre code) {
 }
 
 .brand img {
-  width: 96px;
-  height: 48px;
-  border-radius: 8px;
+  width: clamp(118px, 14vw, 150px);
+  height: auto;
+  border-radius: 0;
   object-fit: contain;
   object-position: center;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: none;
 }
 
 .site-nav {
@@ -642,7 +642,7 @@ pre code {
 
   .site-nav {
     position: absolute;
-    top: 60px;
+    top: 102px;
     left: 0;
     right: 0;
     display: grid;
@@ -705,7 +705,15 @@ pre code {
   }
 
   .site-header::before {
-    height: 66px;
+    height: 92px;
+  }
+
+  .brand img {
+    width: 118px;
+  }
+
+  .site-nav {
+    top: 86px;
   }
 
   .hero {
