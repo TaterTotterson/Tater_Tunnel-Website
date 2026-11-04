@@ -59,3 +59,9 @@ TATER_TUNNEL_SOURCE_DIR=/path/to/Tater_Tunnel python3 scripts/build_wiki.py
 Mascot images were generated with the built-in image tool and copied into
 `public_html/assets/images/` so the site does not depend on Codex cache
 paths.
+
+## License and trademarks
+
+This project is licensed under the [GNU Affero General Public License v3.0](LICENSE).
+
+The Tater name and logo are governed by the [Tater Trademark Policy](TRADEMARKS.md).\n
