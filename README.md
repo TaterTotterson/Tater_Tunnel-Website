@@ -2,6 +2,15 @@
 
 This folder contains the static website and generated docs for Tater Tunnel.
 
+## Editing the site
+
+- `scripts/site_content.py` contains the homepage, guided setup, and searchable guide directory.
+- `scripts/build_wiki.py` generates the pages, shared header and footer, route/security guides, and source documentation.
+- `public_html/assets/site.css` defines the shared orange-and-charcoal Tater design, responsive layouts, and self-hosted Nunito font.
+- `public_html/assets/site.js` handles the mobile menu, keyboard-accessible setup tabs, guide search, and command copying.
+
+Edit the source modules rather than the generated HTML. CSS and JavaScript URLs use content hashes so rebuilds refresh browser caches. The existing Python build and update commands still work; there is no frontend package installation step.
+
 ## Build
 
 ```bash
@@ -59,6 +68,8 @@ TATER_TUNNEL_SOURCE_DIR=/path/to/Tater_Tunnel python3 scripts/build_wiki.py
 Mascot images were generated with the built-in image tool and copied into
 `public_html/assets/images/` so the site does not depend on Codex cache
 paths.
+
+The refreshed pages use WebP copies of the existing artwork. The original Tater logo is used in both the header and footer. Nunito is bundled with its OFL license under `public_html/assets/fonts/`.
 
 ## License and trademarks
 

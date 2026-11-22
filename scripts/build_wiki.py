@@ -2,12 +2,15 @@
 from __future__ import annotations
 
 import html
+import hashlib
 import json
 import re
 import shutil
 import textwrap
 import os
 from pathlib import Path
+
+from site_content import icon, render_home_body, render_setup_body, render_docs_body
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -19,13 +22,6 @@ IMAGE_DIR = ASSET_DIR / "images"
 GITHUB_REPO = "https://github.com/TaterTotterson/Tater_Tunnel"
 ONE_COMMAND_INSTALL = """curl -fsSL https://raw.githubusercontent.com/TaterTotterson/Tater_Tunnel/main/scripts/tater-vps-setup.sh \\
   -o /tmp/tater-vps-setup.sh && sudo bash /tmp/tater-vps-setup.sh"""
-HOME_AGENT_COMMAND = "python3 -m tater_tunnel.home_agent --host 0.0.0.0 --port 4173"
-DEVICE_TEST_URLS = """http://10.88.0.1:4174/api/health
-http://10.88.0.1:4174/relay/api/state"""
-VPS_CHECKS_COMMAND = """sudo systemctl status tater-tunnel-vps
-sudo journalctl -u tater-tunnel-vps -f
-sudo systemctl restart tater-tunnel-vps
-sudo wg show tater0"""
 ROUTE_EXAMPLES_COMMAND = """Route name: tater
 Local target: http://127.0.0.1:8501
 Use: http://10.88.0.1:4174/relay/tater/
@@ -45,11 +41,8 @@ sudo journalctl -u tater-tunnel-vps -f
 sudo systemctl restart tater-tunnel-vps"""
 
 NAV_ITEMS = [
-    ("home", "Home", "index.html"),
-    ("setup", "Setup", "setup/index.html"),
-    ("routes", "Routes", "routes/index.html"),
-    ("security", "Security", "security/index.html"),
-    ("troubleshooting", "Troubleshooting", "troubleshooting/index.html"),
+    ("setup", "Get started", "setup/index.html"),
+    ("routes", "App routes", "routes/index.html"),
     ("docs", "Docs", "wiki/index.html"),
 ]
 
@@ -97,52 +90,55 @@ def page_base(depth: int) -> str:
     return "../" * depth
 
 
+def asset_version(filename: str) -> str:
+    return hashlib.sha256((ASSET_DIR / filename).read_bytes()).hexdigest()[:12]
+
+
 def nav_html(base: str, active: str) -> str:
     links = []
     for key, label, href in NAV_ITEMS:
-        class_name = "nav-link is-active" if key == active else "nav-link"
-        links.append(f'<a class="{class_name}" href="{base}{href}">{escape(label)}</a>')
-    links.append(
-        f'<a class="nav-link nav-link-github" href="{GITHUB_REPO}" target="_blank" rel="noreferrer">GitHub</a>'
-    )
+        current = ' aria-current="page"' if key == active else ''
+        links.append(f'<a class="nav-link" href="{base}{href}"{current}>{escape(label)}</a>')
+    links.append(f'<a class="nav-link nav-link-github" href="{GITHUB_REPO}">{icon("github")}GitHub</a>')
     return "\n".join(links)
 
 
 def page_template(title: str, description: str, body: str, *, nav_key: str, depth: int = 0) -> str:
     base = page_base(depth)
-    return textwrap.dedent(
-        f"""\
+    breadcrumb = "" if nav_key == "home" else f'<div class="docs-breadcrumb"><a href="{base}wiki/index.html">Tater Tunnel guides</a><span aria-hidden="true">/</span><span>{escape(title.split("|")[-1].strip())}</span></div>'
+    return textwrap.dedent(f"""\
         <!DOCTYPE html>
         <html lang="en">
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <meta name="description" content="{escape(description)}">
+          <meta name="theme-color" content="#17191b">
+          <meta property="og:type" content="website">
+          <meta property="og:title" content="{escape(title)}">
+          <meta property="og:description" content="{escape(description)}">
+          <meta property="og:image" content="https://tatertunnel.com/assets/images/tater-tunnel-hero.png">
+          <meta name="twitter:card" content="summary_large_image">
           <title>{escape(title)}</title>
-          <link rel="stylesheet" href="{base}assets/site.css">
-          <script src="{base}assets/site.js" defer></script>
+          <link rel="preload" href="{base}assets/fonts/nunito-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+          <link rel="stylesheet" href="{base}assets/site.css?v={asset_version('site.css')}">
+          <script src="{base}assets/site.js?v={asset_version('site.js')}" defer></script>
         </head>
         <body data-page="{escape(nav_key)}">
+          <a class="skip-link" href="#main-content">Skip to content</a>
           <header class="site-header">
-            <a class="brand" href="{base}index.html" aria-label="Tater Tunnel home">
-              <img src="{base}assets/images/tater-logo-primary.png" alt="Tater logo">
-            </a>
-            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
-            <nav class="site-nav" id="site-nav">
-              {nav_html(base, nav_key)}
-            </nav>
+            <a class="brand" href="{base}index.html" aria-label="Tater Tunnel home"><img src="{base}assets/images/tater-logo-primary.png" alt="Tater" width="1535" height="1024"><span>Tunnel</span></a>
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu <span aria-hidden="true">☰</span></button>
+            <nav class="site-nav" id="site-nav" aria-label="Main navigation">{nav_html(base, nav_key)}</nav>
           </header>
-          <main>
-            {body}
-          </main>
+          <main id="main-content" tabindex="-1">{breadcrumb}{body}</main>
           <footer class="site-footer">
-            <p>Tater Tunnel docs are generated from this repository.</p>
-            <p><a href="{GITHUB_REPO}" target="_blank" rel="noreferrer">View the project on GitHub</a></p>
+            <div class="footer-main"><div class="footer-brand"><a class="brand" href="{base}index.html" aria-label="Tater Tunnel home"><img src="{base}assets/images/tater-logo-primary.png" alt="Tater" width="1535" height="1024" loading="lazy"><span>Tunnel</span></a><p>A little closer to home.</p></div><div class="footer-column"><h2>Get connected</h2><a href="{base}setup/index.html">Start setup</a><a href="{base}setup/index.html#home-agent">Get the Home Agent</a><a href="{base}routes/index.html">Add an app route</a></div><div class="footer-column"><h2>A little guidance</h2><a href="{base}wiki/index.html">All guides</a><a href="{base}security/index.html">Access &amp; security</a><a href="{base}troubleshooting/index.html">Troubleshooting</a></div><div class="footer-column"><h2>Come say hello</h2><a href="{GITHUB_REPO}">Tunnel on GitHub</a><a href="{GITHUB_REPO}/issues">Ideas &amp; issues</a><a href="https://taterassistant.com">Meet Tater Assistant</a><a href="https://tatertube.tv">Meet Tater Tube</a></div></div>
+            <div class="footer-bottom"><p>Your VPS. Your devices. Your way home.</p><a href="https://github.com/TaterTotterson/Tater_Tunnel-Website/blob/main/LICENSE">Open source</a><a href="#">Back to top</a></div>
           </footer>
         </body>
         </html>
-        """
-    )
+        """)
 
 
 def chip(label: str) -> str:
@@ -185,7 +181,7 @@ def image_panel(src: str, alt: str, caption: str, base: str) -> str:
     return textwrap.dedent(
         f"""\
         <figure class="image-panel">
-          <img src="{base}assets/images/{escape(src)}" alt="{escape(alt)}">
+          <img src="{base}assets/images/{escape(src.replace(".png", ".webp"))}" alt="{escape(alt)}">
           <figcaption>{escape(caption)}</figcaption>
         </figure>
         """
@@ -193,165 +189,18 @@ def image_panel(src: str, alt: str, caption: str, base: str) -> str:
 
 
 def render_home_page() -> str:
-    base = ""
-    setup_cards = "\n".join(
-        [
-            simple_card(
-                "Home Agent",
-                "Runs beside Tater on the user's home machine. It owns pairing, approved devices, route targets, and the local relay to approved Tater or app services.",
-                ["macOS", "Windows", "Linux", "Docker path later"],
-            ),
-            simple_card(
-                "VPS Agent",
-                "Runs on the user's VPS. It gives the Home Agent a public rendezvous point, hosts WireGuard device peers, and relays approved requests.",
-                ["Caddy HTTPS", "WireGuard", "No home ports"],
-            ),
-            simple_card(
-                "Remote Devices",
-                "Phones and laptops scan a WireGuard QR, connect to the VPS, and open approved relay URLs like 10.88.0.1:4174/relay/tater/.",
-                ["QR setup", "Revokable", "Mobile friendly"],
-            ),
-        ]
-    )
-    body = f"""
-    <section class="hero">
-      <img class="hero-bg" src="assets/images/tater-tunnel-hero.png" alt="" aria-hidden="true">
-      <div class="hero-copy">
-        <span class="eyebrow">Secure relay + mobile VPN</span>
-        <h1>Tater Tunnel</h1>
-        <p>Bring your home Tater setup and approved local apps with you through your own VPS, without opening inbound ports at home.</p>
-        <div class="hero-actions">
-          {action_link("Start setup", "setup/index.html")}
-          {action_link("View routes", "routes/index.html", secondary=True)}
-        </div>
-        <div class="hero-facts" aria-label="Tater Tunnel highlights">
-          <span>Home Agent -> VPS Agent</span>
-          <span>WireGuard QR for phones</span>
-          <span>Approved routes only</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-intro" id="overview">
-      <div class="section-head">
-        <span class="eyebrow">What it does</span>
-        <h2>A simple path from phone to your home apps.</h2>
-        <p>Tater Tunnel splits the problem into two easy pieces: the home computer makes an outbound relay connection, and mobile devices use a normal WireGuard profile to reach approved app routes through the VPS side.</p>
-      </div>
-      <div class="grid grid-3">
-        {setup_cards}
-      </div>
-    </section>
-
-    <section class="section flow-section">
-      <div class="section-head">
-        <span class="eyebrow">Traffic shape</span>
-        <h2>The VPS relays. The Home Agent owns trust.</h2>
-      </div>
-      <div class="flow-strip" aria-label="Tunnel traffic flow">
-        <div><strong>Phone</strong><span>WireGuard app</span></div>
-        <b>-></b>
-        <div><strong>VPS</strong><span>10.88.0.1 relay</span></div>
-        <b>-></b>
-        <div><strong>Home Agent</strong><span>approved routes</span></div>
-        <b>-></b>
-        <div><strong>Approved apps</strong><span>local targets</span></div>
-      </div>
-    </section>
-
-    <section class="section split-section">
-      <div class="split-copy">
-        <span class="eyebrow">One-command VPS setup</span>
-        <h2>Blank VPS users get Caddy, WireGuard, firewall rules, and the service.</h2>
-        <p>The interactive installer has a friendly terminal menu with update, blank VPS, advanced VPS, and setup-notes paths. Running the same command later lets users update an existing install.</p>
-        {command_box(ONE_COMMAND_INSTALL, "Run on the VPS")}
-      </div>
-      {image_panel("tater-vps-secure.png", "Tater mascot beside a secure VPS", "Full setup keeps the raw agent port private and puts HTTPS in front with Caddy.", base)}
-    </section>
-
-    <section class="section split-section split-section-reverse">
-      {image_panel("tater-mobile-qr.png", "Tater mascot holding a phone with a QR code", "Remote devices scan a generated WireGuard QR and then use relay URLs through 10.88.0.1.", base)}
-      <div class="split-copy">
-        <span class="eyebrow">Mobile path</span>
-        <h2>Phones use the familiar VPN flow.</h2>
-        <p>The Home Agent generates a device profile, the VPS Agent installs the WireGuard peer, and the user scans a QR in the WireGuard app. Revoking a device removes the VPS peer and the Home Agent record.</p>
-        <div class="callout">
-          <strong>Common route URL</strong>
-          <code>http://10.88.0.1:4174/relay/tater/</code>
-        </div>
-      </div>
-    </section>
-    """
     return page_template(
-        "Tater Tunnel | Secure relay for home apps",
-        "Tater Tunnel pairs a Home Agent to a VPS and lets remote devices reach approved Tater and local app routes through WireGuard and a home relay.",
-        body,
-        nav_key="home",
-        depth=0,
+        "Tater Tunnel | Your home apps. Anywhere you go.",
+        "Bring Tater and your favorite local apps with you. Connect through a VPS you control without opening ports on your home router.",
+        render_home_body(), nav_key="home",
     )
 
 
 def render_setup_page() -> str:
-    base = "../"
-    body = f"""
-    <section class="sub-hero">
-      <span class="eyebrow">Setup</span>
-      <h1>Get the VPS and Home Agent paired.</h1>
-      <p>Start with the VPS, then claim it from the Home Agent UI, then add phone or laptop devices.</p>
-    </section>
-
-    <section class="section">
-      <div class="step-list">
-        <article class="step-block">
-          <span>Step 1</span>
-          <h2>Run the VPS setup command over SSH.</h2>
-          <p>Use this for a blank Debian or Ubuntu VPS, or run it again later and choose the update path.</p>
-          {command_box(ONE_COMMAND_INSTALL, "Recommended VPS command")}
-        </article>
-        <article class="step-block">
-          <span>Step 2</span>
-          <h2>Pick the installer path.</h2>
-          <div class="grid grid-3">
-            {simple_card("Blank VPS full install", "Installs the VPS Agent, WireGuard, Caddy automatic HTTPS, and UFW rules. Best for a new VPS.", ["80/tcp", "443/tcp", "51888/udp"])}
-            {simple_card("Advanced existing VPS", "Installs only the VPS Agent. The user manages HTTPS reverse proxy and firewall rules.", ["Webmin friendly", "Manual proxy"])}
-            {simple_card("Update existing install", "Downloads the latest code, preserves pairing/state, keeps the current service host/port, and restarts the service.", ["Safe update", "Keeps state"])}
-          </div>
-        </article>
-        <article class="step-block">
-          <span>Step 3</span>
-          <h2>Start the Home Agent and claim the VPS.</h2>
-          <p>For remote testing or a LAN-accessible machine, bind the Home Agent to all interfaces. In normal local use, 127.0.0.1 is enough.</p>
-          {command_box(HOME_AGENT_COMMAND, "Home Agent")}
-          <div class="check-grid">
-            <div><strong>VPS IP or Domain</strong><code>https://tunnel.example.com</code></div>
-            <div><strong>Pairing Code</strong><code>shown by the installer</code></div>
-            <div><strong>Security Mode</strong><code>standard</code></div>
-          </div>
-        </article>
-        <article class="step-block">
-          <span>Step 4</span>
-          <h2>Add a phone or laptop.</h2>
-          <p>Use the Home Agent device section to create a profile, scan the QR in the WireGuard app, then test the relay health route from the device.</p>
-          {command_box(DEVICE_TEST_URLS, "Open from the connected device")}
-        </article>
-      </div>
-    </section>
-
-    <section class="section split-section">
-      <div class="split-copy">
-        <span class="eyebrow">Service checks</span>
-        <h2>Useful VPS commands after install.</h2>
-        {command_box(VPS_CHECKS_COMMAND, "VPS checks")}
-      </div>
-      {image_panel("tater-vps-secure.png", "Tater mascot beside a secure VPS", "Caddy handles public HTTPS. The raw agent service stays local or VPN-only.", base)}
-    </section>
-    """
     return page_template(
-        "Tater Tunnel | Setup",
-        "Install the Tater Tunnel VPS Agent, pair the Home Agent, and add WireGuard devices.",
-        body,
-        nav_key="setup",
-        depth=1,
+        "Tater Tunnel | Get connected",
+        "Set up your VPS, get the Tater Tunnel Home Agent for macOS, Python, or Docker, and connect your first device.",
+        render_setup_body(command_box, ONE_COMMAND_INSTALL), nav_key="setup", depth=1,
     )
 
 
@@ -360,7 +209,7 @@ def render_routes_page() -> str:
     body = f"""
     <section class="sub-hero">
       <span class="eyebrow">Routes</span>
-      <h1>Expose only the apps you approve.</h1>
+      <h1>Your apps.<br><span>Your little routes.</span></h1>
       <p>Routes are named paths under the VPS relay. The phone opens the VPS tunnel IP, and the Home Agent proxies the request to a Tater service or any local app target you choose.</p>
     </section>
 
@@ -394,7 +243,7 @@ def render_routes_page() -> str:
     <section class="section">
       <div class="section-head">
         <span class="eyebrow">Route settings</span>
-        <h2>Use the simple UI first, advanced switches only when an app needs them.</h2>
+        <h2>A few settings.<br>A better connection.</h2>
       </div>
       <div class="grid grid-3">
         {simple_card("Target URL", "The local URL the Home Agent can reach, such as http://127.0.0.1:8501 or http://10.4.20.204:8096.", ["Required"])}
@@ -425,7 +274,7 @@ def render_security_page() -> str:
     body = f"""
     <section class="sub-hero">
       <span class="eyebrow">Security</span>
-      <h1>The VPS is a relay, not the trust boss.</h1>
+      <h1>Your connections.<br><span>Your control.</span></h1>
       <p>The Home Agent owns device approval, relay tokens, route targets, and revocation. The VPS should hold only enough state to relay traffic and manage WireGuard peers.</p>
     </section>
 
@@ -483,7 +332,7 @@ def render_troubleshooting_page() -> str:
     body = f"""
     <section class="sub-hero">
       <span class="eyebrow">Troubleshooting</span>
-      <h1>Follow the path one hop at a time.</h1>
+      <h1>A little help.<br><span>Back on track.</span></h1>
       <p>Most tunnel issues are one of four things: pairing, VPS firewall, WireGuard handshake, or a route target that needs a base URL/WebSocket tweak.</p>
     </section>
 
@@ -621,53 +470,33 @@ def render_markdown(markdown: str) -> str:
 def doc_summary(markdown: str) -> str:
     for line in markdown.splitlines():
         stripped = line.strip()
-        if stripped and not stripped.startswith("#") and not stripped.startswith("```"):
+        if stripped and not stripped.startswith(("#", "```", "Website:")):
             return stripped
     return "Generated from the current Tater Tunnel source tree."
 
 
 def render_docs_index(docs: list[dict[str, str]]) -> str:
-    cards = "\n".join(
-        textwrap.dedent(
-            f"""\
-            <article class="info-card">
-              <h3><a href="{escape(doc['slug'])}.html">{escape(doc['title'])}</a></h3>
-              <p>{escape(doc['summary'])}</p>
-            </article>
-            """
-        )
-        for doc in docs
-    )
-    body = f"""
-    <section class="sub-hero">
-      <span class="eyebrow">Generated docs</span>
-      <h1>Source-backed Tater Tunnel docs.</h1>
-      <p>This section is rebuilt from the README and docs folder so the website follows the app code.</p>
-    </section>
-    <section class="section">
-      <div class="grid grid-2">
-        {cards}
-      </div>
-    </section>
-    """
     return page_template(
         "Tater Tunnel | Docs",
-        "Generated Tater Tunnel documentation index.",
-        body,
-        nav_key="docs",
-        depth=1,
+        "Setup guides and reference for your VPS, Home Agent, app routes, and devices.",
+        render_docs_body(docs), nav_key="docs", depth=1,
     )
 
 
 def render_doc_page(doc: dict[str, str]) -> str:
+    content = re.sub(r"^<h1>.*?</h1>\s*", "", doc["html"], count=1)
+    content = re.sub(r"^<p>Website:.*?</p>\s*", "", content, count=1)
+    introduction = f'<p>{render_inline_markdown(doc["summary"])}</p>'
+    if content.startswith(introduction):
+        content = content[len(introduction):].lstrip()
     body = f"""
     <section class="sub-hero doc-sub-hero">
-      <span class="eyebrow">Generated docs</span>
+      <span class="eyebrow">Tater Tunnel reference</span>
       <h1>{escape(doc['title'])}</h1>
       <p>{escape(doc['summary'])}</p>
     </section>
     <article class="section doc-content">
-      {doc['html']}
+      {content}
     </article>
     """
     return page_template(

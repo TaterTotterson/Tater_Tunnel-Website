@@ -4,40 +4,56 @@
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <meta name="description" content="Tater Tunnel has two VPS setup paths.">
+          <meta name="theme-color" content="#17191b">
+          <meta property="og:type" content="website">
+          <meta property="og:title" content="Tater Tunnel | VPS Install">
+          <meta property="og:description" content="Tater Tunnel has two VPS setup paths.">
+          <meta property="og:image" content="https://tatertunnel.com/assets/images/tater-tunnel-hero.png">
+          <meta name="twitter:card" content="summary_large_image">
           <title>Tater Tunnel | VPS Install</title>
-          <link rel="stylesheet" href="../assets/site.css">
-          <script src="../assets/site.js" defer></script>
+          <link rel="preload" href="../assets/fonts/nunito-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+          <link rel="stylesheet" href="../assets/site.css?v=718664e1f19f">
+          <script src="../assets/site.js?v=4c81356b1924" defer></script>
         </head>
         <body data-page="docs">
+          <a class="skip-link" href="#main-content">Skip to content</a>
           <header class="site-header">
-            <a class="brand" href="../index.html" aria-label="Tater Tunnel home">
-              <img src="../assets/images/tater-logo-primary.png" alt="Tater logo">
-            </a>
-            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
-            <nav class="site-nav" id="site-nav">
-              <a class="nav-link" href="../index.html">Home</a>
-<a class="nav-link" href="../setup/index.html">Setup</a>
-<a class="nav-link" href="../routes/index.html">Routes</a>
-<a class="nav-link" href="../security/index.html">Security</a>
-<a class="nav-link" href="../troubleshooting/index.html">Troubleshooting</a>
-<a class="nav-link is-active" href="../wiki/index.html">Docs</a>
-<a class="nav-link nav-link-github" href="https://github.com/TaterTotterson/Tater_Tunnel" target="_blank" rel="noreferrer">GitHub</a>
-            </nav>
+            <a class="brand" href="../index.html" aria-label="Tater Tunnel home"><img src="../assets/images/tater-logo-primary.png" alt="Tater" width="1535" height="1024"><span>Tunnel</span></a>
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu <span aria-hidden="true">☰</span></button>
+            <nav class="site-nav" id="site-nav" aria-label="Main navigation"><a class="nav-link" href="../setup/index.html">Get started</a>
+<a class="nav-link" href="../routes/index.html">App routes</a>
+<a class="nav-link" href="../wiki/index.html" aria-current="page">Docs</a>
+<a class="nav-link nav-link-github" href="https://github.com/TaterTotterson/Tater_Tunnel"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-5 2-5-3-7-3m14 6v-4a4 4 0 0 0-1-3c4-.5 6-2 6-6a5 5 0 0 0-1-3 5 5 0 0 0 0-4s-2-.5-4 1a14 14 0 0 0-8 0C6 1.5 4 2 4 2a5 5 0 0 0 0 4 5 5 0 0 0-1 3c0 4 2 5.5 6 6a4 4 0 0 0-1 3v4"/></svg>GitHub</a></nav>
           </header>
-          <main>
-
+          <main id="main-content" tabindex="-1"><div class="docs-breadcrumb"><a href="../wiki/index.html">Tater Tunnel guides</a><span aria-hidden="true">/</span><span>VPS Install</span></div>
     <section class="sub-hero doc-sub-hero">
-      <span class="eyebrow">Generated docs</span>
+      <span class="eyebrow">Tater Tunnel reference</span>
       <h1>VPS Install</h1>
       <p>Tater Tunnel has two VPS setup paths.</p>
     </section>
     <article class="section doc-content">
-      <h1>Tater Tunnel VPS Install</h1>
-<p>Tater Tunnel has two VPS setup paths.</p>
-<h2>Recommended Interactive Setup</h2>
-<p>For users, the intended VPS flow is one command over SSH:</p>
+      <h2>Recommended Interactive Setup</h2>
+<p>For users, the intended VPS flow is one command over SSH.</p>
+<p>If you are already logged in as a normal sudo user:</p>
 <pre><code>curl -fsSL https://raw.githubusercontent.com/TaterTotterson/Tater_Tunnel/main/scripts/tater-vps-setup.sh \
   -o /tmp/tater-vps-setup.sh &amp;&amp; sudo bash /tmp/tater-vps-setup.sh</code></pre>
+<p>If this is a brand-new VPS and you are logged in directly as <code>root</code>, run the setup without <code>sudo</code> first:</p>
+<pre><code>curl -fsSL https://raw.githubusercontent.com/TaterTotterson/Tater_Tunnel/main/scripts/tater-vps-setup.sh \
+  -o /tmp/tater-vps-setup.sh &amp;&amp; bash /tmp/tater-vps-setup.sh</code></pre>
+<p>When you choose <code>Blank VPS full install</code> from a root login, the setup pauses the Tater install and offers to create a real sudo user first. It can copy root SSH keys to the new account, then prints PC-side commands like:</p>
+<pre><code>VPS_HOST=your.vps.ip.or.domain
+ssh-keygen -t ed25519 -C &quot;tater-tunnel-vps&quot;
+ssh-copy-id -i ~/.ssh/id_ed25519.pub tater@$VPS_HOST
+ssh tater@$VPS_HOST</code></pre>
+<p>After key login works, reconnect as the sudo user and rerun:</p>
+<pre><code>curl -fsSL https://raw.githubusercontent.com/TaterTotterson/Tater_Tunnel/main/scripts/tater-vps-setup.sh \
+  -o /tmp/tater-vps-setup.sh &amp;&amp; sudo bash /tmp/tater-vps-setup.sh</code></pre>
+<p>Then harden SSH from the new sudo session:</p>
+<pre><code>sudo install -d -m 0755 /etc/ssh/sshd_config.d
+printf &#x27;%s\n&#x27; &#x27;PubkeyAuthentication yes&#x27; &#x27;PasswordAuthentication no&#x27; &#x27;PermitRootLogin no&#x27; | sudo tee /etc/ssh/sshd_config.d/99-tater-hardening.conf
+sudo sshd -t
+sudo systemctl reload ssh || sudo systemctl reload sshd</code></pre>
+<p>Keep the root session open until you have tested a second login as the new sudo user, so you do not lock yourself out.</p>
 <p>To test a branch or fork, pass the repo explicitly:</p>
 <pre><code>curl -fsSL https://raw.githubusercontent.com/TaterTotterson/Tater_Tunnel/main/scripts/tater-vps-setup.sh \
   -o /tmp/tater-vps-setup.sh &amp;&amp; \
@@ -51,7 +67,7 @@
 <p>If the repo is already on the VPS, run the menu directly:</p>
 <pre><code>sudo ./scripts/tater-vps-setup.sh</code></pre>
 <p>Use the arrow keys to select:</p>
-<ul><li><code>Update existing install</code></li><li><code>Blank VPS full install</code></li><li><code>Advanced existing VPS install</code></li><li><code>View setup notes</code></li></ul>
+<ul><li><code>Update existing install</code></li><li><code>Blank VPS full install</code></li><li><code>Advanced existing VPS install</code></li><li><code>Optional ZNC install</code></li><li><code>Uninstall VPS install</code></li><li><code>View setup notes</code></li></ul>
 <p>The menu asks for the needed values, shows a setup summary, and then runs the matching installer while the package and service progress prints below.</p>
 <p>Download/update options:</p>
 <pre><code>sudo ./scripts/tater-vps-setup.sh --repo https://github.com/TaterTotterson/Tater_Tunnel.git
@@ -77,6 +93,7 @@ sudo ./scripts/tater-vps-setup.sh --source-dir /opt/tater-tunnel-src</code></pre
 <p>Pair the Home Agent with:</p>
 <pre><code>VPS IP or Domain: https://tunnel.example.com
 Pairing Code: shown by the installer</code></pre>
+<p>Opening <code>https://tunnel.example.com/</code> in a browser shows a small Tater Tunnel status page. API and pairing endpoints remain under <code>/api/*</code>.</p>
 <p>After a phone connects to the WireGuard profile, the local Tater app relay is:</p>
 <pre><code>http://10.88.0.1:4174/relay/</code></pre>
 <p>For example, the Home Agent API state route is:</p>
@@ -105,21 +122,51 @@ Pairing Code: shown by the installer</code></pre>
 <p>Then pair the Home Agent with:</p>
 <pre><code>VPS IP or Domain: https://tunnel.example.com
 Pairing Code: sudo cat /var/lib/tater-tunnel/pairing-code</code></pre>
+<h2>Optional ZNC Install</h2>
+<p>The guided menu can install ZNC as an optional user-owned IRC bouncer. Choose <code>Optional ZNC install</code>.</p>
+<p>The installer:</p>
+<p>  <code>/home/tater/.znc</code>.</p>
+<ul><li>Installs the Debian/Ubuntu <code>znc</code> package.</li><li>Runs ZNC as the selected sudo user, not as root.</li><li>Keeps ZNC config/data in that user&#x27;s home folder, for example</li><li>Writes a systemd service named <code>znc-USER.service</code>.</li><li>Can run ZNC&#x27;s interactive <code>--makeconf</code> wizard immediately.</li><li>Can optionally open the selected TCP port in UFW.</li></ul>
+<p>Direct command:</p>
+<pre><code>sudo ./scripts/install-znc.sh --user tater --makeconf</code></pre>
+<p>If you skip the interactive config wizard during install, finish later with:</p>
+<pre><code>sudo -iu tater znc --makeconf --datadir /home/tater/.znc
+sudo systemctl enable --now znc-tater</code></pre>
+<p>Replace <code>tater</code> with the sudo user that should own the ZNC config.</p>
+<h2>Uninstall</h2>
+<p>Use the guided menu and choose <code>Uninstall VPS install</code>:</p>
+<pre><code>curl -fsSL https://raw.githubusercontent.com/TaterTotterson/Tater_Tunnel/main/scripts/tater-vps-setup.sh \
+  -o /tmp/tater-vps-setup.sh &amp;&amp; sudo bash /tmp/tater-vps-setup.sh</code></pre>
+<p>The uninstall path removes:</p>
+<ul><li><code>tater-tunnel-vps</code> systemd service.</li><li>Installed app files in <code>/opt/tater-tunnel</code>.</li><li>Live <code>tater0</code> WireGuard interface if it exists.</li><li>Tater WireGuard UFW rules, unless you choose to keep them.</li><li>The <code>tater-tunnel</code> service user/group if state/config data is purged.</li></ul>
+<p>It asks before deleting:</p>
+<ul><li>Pairing/device state in <code>/var/lib/tater-tunnel</code>.</li><li>WireGuard config in <code>/etc/tater-tunnel</code>.</li><li>Downloaded source checkout in <code>/opt/tater-tunnel-src</code>.</li><li>A Caddyfile proxy that points to the Tater VPS Agent.</li></ul>
+<p>It does not uninstall shared packages such as Python, Caddy, UFW, WireGuard, or WireGuard tools.</p>
+<p>Direct uninstall command:</p>
+<pre><code>sudo ./scripts/uninstall-vps.sh</code></pre>
+<p>Full purge:</p>
+<pre><code>sudo ./scripts/uninstall-vps.sh --purge-data --remove-source</code></pre>
 <h2>Service Commands</h2>
 <pre><code>sudo systemctl status tater-tunnel-vps
 sudo journalctl -u tater-tunnel-vps -f
 sudo systemctl restart tater-tunnel-vps</code></pre>
+<p>If the VPS is already claimed but you need to pair a fresh Home Agent, reopen pairing without resetting approved device peers:</p>
+<pre><code>cd /opt/tater-tunnel
+sudo -u tater-tunnel python3 -B -m tater_tunnel.vps_agent \
+  --state-file /var/lib/tater-tunnel/vps-agent.json \
+  --pairing-code-file /var/lib/tater-tunnel/pairing-code \
+  --reopen-pairing</code></pre>
+<p>The running service will pick up the reopened pairing state on the next request. The guided setup script&#x27;s <code>Update existing install</code> path can do the same thing by answering <code>yes</code> to <code>Reopen pairing after update</code>.</p>
 <p>For full installs:</p>
 <pre><code>sudo systemctl status caddy
-curl -fsS https://tunnel.example.com/api/health</code></pre>
+curl -fsS https://tunnel.example.com/</code></pre>
 <p>For WireGuard live status:</p>
 <pre><code>sudo wg show tater0</code></pre>
     </article>
-
-          </main>
+    </main>
           <footer class="site-footer">
-            <p>Tater Tunnel docs are generated from this repository.</p>
-            <p><a href="https://github.com/TaterTotterson/Tater_Tunnel" target="_blank" rel="noreferrer">View the project on GitHub</a></p>
+            <div class="footer-main"><div class="footer-brand"><a class="brand" href="../index.html" aria-label="Tater Tunnel home"><img src="../assets/images/tater-logo-primary.png" alt="Tater" width="1535" height="1024" loading="lazy"><span>Tunnel</span></a><p>A little closer to home.</p></div><div class="footer-column"><h2>Get connected</h2><a href="../setup/index.html">Start setup</a><a href="../setup/index.html#home-agent">Get the Home Agent</a><a href="../routes/index.html">Add an app route</a></div><div class="footer-column"><h2>A little guidance</h2><a href="../wiki/index.html">All guides</a><a href="../security/index.html">Access &amp; security</a><a href="../troubleshooting/index.html">Troubleshooting</a></div><div class="footer-column"><h2>Come say hello</h2><a href="https://github.com/TaterTotterson/Tater_Tunnel">Tunnel on GitHub</a><a href="https://github.com/TaterTotterson/Tater_Tunnel/issues">Ideas &amp; issues</a><a href="https://taterassistant.com">Meet Tater Assistant</a><a href="https://tatertube.tv">Meet Tater Tube</a></div></div>
+            <div class="footer-bottom"><p>Your VPS. Your devices. Your way home.</p><a href="https://github.com/TaterTotterson/Tater_Tunnel-Website/blob/main/LICENSE">Open source</a><a href="#">Back to top</a></div>
           </footer>
         </body>
         </html>
